@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Calculadora de huelga | CGT Primark</title>
+<style>
+:root{font-family:system-ui,Arial,sans-serif;color:#222;background:#f4f4f4}*{box-sizing:border-box}
+body{margin:0;padding:22px 12px}.wrap{max-width:540px;margin:auto;background:white;border-radius:16px;overflow:hidden;box-shadow:0 6px 25px #0001}
+header{background:linear-gradient(110deg,#b80016 50%,#181818 50%);color:white;padding:25px}h1{margin:0;font-size:26px}header p{margin-bottom:0}
+main{padding:22px}label{display:block;font-weight:650;margin:16px 0 6px}input,select{width:100%;padding:13px;border:1px solid #aaa;border-radius:9px;font-size:17px}
+small{color:#666;display:block;margin-top:5px}.result{margin-top:22px;padding:18px;background:#f4f4f4;border-left:5px solid #b80016;border-radius:8px}
+.amount{font-size:34px;font-weight:800;margin:6px 0}.muted{color:#555;font-size:13px;line-height:1.5}
+button{width:100%;padding:13px;background:#b80016;color:white;border:0;border-radius:9px;font-size:16px;font-weight:700;margin-top:16px}
+footer{text-align:center;font-size:13px;padding:15px;background:#222;color:white}
+</style></head><body><div class="wrap"><header><h1>CGT · PRIMARK</h1><p>Calculadora orientativa de descuento por huelga</p></header>
+<main><p>Introduce los importes <strong>brutos mensuales</strong> de tu nómina. No introduzcas el salario neto.</p>
+<label for="fijo">Salario fijo mensual computable (€)</label><input id="fijo" inputmode="decimal" type="text" value="1000">
+<small>Salario base, antigüedad y complementos salariales fijos que correspondan.</small>
+<label for="extra">Equivalente mensual de pagas extra (€)</label><input id="extra" inputmode="decimal" type="text" value="150">
+<small>Incluye el equivalente mensual aunque cobres las pagas aparte. Evita duplicarlas si ya las has incluido arriba.</small>
+<label for="trabajo">Días de trabajo por semana</label><select id="trabajo"><option value="4">4 días</option><option value="5" selected>5 días</option><option value="6">6 días</option></select>
+<label for="descanso">Días de descanso semanal</label><select id="descanso"><option value="1">1 día</option><option value="1.5">1,5 días</option><option value="2" selected>2 días</option><option value="3">3 días</option></select>
+<div class="result" aria-live="polite"><div>Descuento bruto estimado por una jornada completa de huelga</div><div class="amount" id="resultado">—</div><div class="muted" id="formula"></div></div>
+<button id="copiar">Copiar resultado</button>
+<p class="muted"><strong>Atención:</strong> cálculo simplificado: (salario mensual computable ÷ 30) × (1 + días de descanso ÷ días de trabajo). No es una fórmula legal universal. La deducción real puede variar según la distribución de jornada, convenio, naturaleza de los pluses, descanso semanal, pagas extraordinarias y cotizaciones. No se descuentan vacaciones por ejercer la huelga. Para jornadas parciales o irregulares se necesita un cálculo específico. El importe mostrado es bruto, no neto.</p>
+</main><footer>Sección Sindical CGT · Primark | Herramienta informativa no oficial</footer></div>
+<script>
+const $=id=>document.getElementById(id);
+const num=v=>{v=v.trim().replace(/\s/g,'');if(v.includes(',')&&v.includes('.'))v=v.replace(/\./g,'').replace(',','.');else v=v.replace(',','.');return Math.max(0,Number(v)||0)};
+const eur=v=>v.toLocaleString('es-ES',{style:'currency',currency:'EUR'});let summary='';
+function update(){const fixed=num($('fijo').value),extra=num($('extra').value),work=Number($('trabajo').value),rest=Number($('descanso').value),factor=1+rest/work,result=(fixed+extra)/30*factor;
+$('resultado').textContent=eur(result);
+$('formula').textContent='('+eur(fixed)+' + '+eur(extra)+') ÷ 30 × '+factor.toLocaleString('es-ES',{maximumFractionDigits:4})+' = '+eur(result);
+summary='Estimación CGT Primark de descuento bruto por huelga: '+$('formula').textContent+'. Cálculo orientativo, no definitivo.'}
+document.querySelectorAll('input,select').forEach(x=>x.addEventListener('input',update));
+$('copiar').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(summary);$('copiar').textContent='Resultado copiado'}catch(e){window.prompt('Copia el resultado:',summary)}});update();
+</script></body></html>
